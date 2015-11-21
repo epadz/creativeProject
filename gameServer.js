@@ -28,7 +28,7 @@ function pickLetter(){
 function pickCat(){
 	return cats[parseInt(Math.floor(Math.random() * 216))];
 }
-
+console.log(pickCat() + " " + pickCat() + " " + pickCat() + " " + pickCat() + " " + pickCat() + " " + pickCat() + " " + pickCat() + " " + pickCat() + " ");
 //an object that represents the game. A player can create a game. when a player creates and/or joins a game, set the game they joined to socket.game.
 //xgid is the id of the new game
 //xhost is the socket of the person who started the game
@@ -117,7 +117,6 @@ function answer(xplayer, xanswer){
 	this.hasSimilar = false;
 }
 
-
 // Retrieve
 var app = http.createServer(function(req, resp){
 	var filename = path.join(__dirname, "", url.parse(req.url).pathname);
@@ -178,5 +177,12 @@ io.sockets.on("connection", function(socket){
 	
 	//function to handle creating a game
 	
+	//function to handle ending/ deleting a game
+	
+	//function to handle a player submitting an answer
+	
+	//function to handle a player voting down an answer
+	
+	//function to handle a player leaving a game
 	
 });
