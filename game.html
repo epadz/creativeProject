@@ -12,18 +12,44 @@
 var socketio = io.connect();
 socketio.on('connect', function(){
 	//alert("connected");
+	//socketio.emit('setUN', prompt("pick a username"));
 })
 
 //when it gets the list of rooms, create the html elements to show
+socketio.on("updateGameList",function(data){
+	var elems = "";
+	$.each(data, function(xgid, xgpop){
+		elems += '<div class="game" data-gid="' + xgid + '" onclick="joinGame(' + xgid + ')"><div class="population">' + xgpop + '<span class="popLimit">/6</span></div><div class="join">join</div></div>';
+	});
+	elems += '<div class="game" onclick="createNewGame()"><div class="newGame">new game</div></div>';
+	$("#games").html(elems);
+});
+
+socketio.on("updatePlayerList",function(data){
+	var elems = "";
+	$.each(data, function(xpid, xp){
+		elems += '<div class="player" data-id="' + xpid + '"><div class="pun">' + xp.un + ' ' + xpid + '</div><div class="ppt">' + xp.score + '</div></div>';
+	});
+	$("#playerList").html(elems);
+});
 
 //when a current game is clicked to enter
-
+function joinGame(xgid){
+	socketio.emit('joinGame', xgid);
+}
 //when create new game is clicked
-
+function createNewGame(){
+	socketio.emit('createNewGame', null);
+}
 //when it receives response that game has been created or joined and now the player must go to the waiting for more players screen
-
+socketio.on("joined_wait",function(data){
+	setView(3);
+});
 //when it receives notification that the round has started and is given the list of players and their scores
-
+socketio.on("startRound",function(data){
+	setView(1);
+	$("#cat").html(data.cat + '<div id="letter">' + data.letter + '</div>');
+});
 //when the player submits an answer -> change submit button to say waiting, make it not do anything on click and make input readonly 
 
 //when it receives notification that the round has ended and is given the array of answer objects
@@ -70,7 +96,7 @@ function setView(xview){	//0 is games list, 1 is game play, 2 is review, 3 is wa
 			$("#cat").css("display","none");
 			$("#play").css("display","none");
 			$("#review").css("display","none");
-			$("#playerList").css("display","none");
+			$("#playerList").css("display","block");
 			$("#games").css("display","none");
 			$("#waiting").css("display","block");
 			break;
@@ -80,7 +106,7 @@ function setView(xview){	//0 is games list, 1 is game play, 2 is review, 3 is wa
 <link href="style.css" rel="stylesheet" type="text/css">
 </head>
 
-<body onLoad="setView(1)">
+<body onLoad="setView(0)">
 	<!-- 3: WAITING SCREEN -->
     <div id="waiting">
     	waiting to join game
@@ -89,7 +115,7 @@ function setView(xview){	//0 is games list, 1 is game play, 2 is review, 3 is wa
     
     <!-- 1/2: GAME PLAY AND REVIEW SCREENS -->
 	<div id="timerO" style="display:none"><div id="timerI"></div></div>
-	<div id="cat" style="display:none">Famous duos and trios<div id="letter" onClick="setView(0)">M</div></div>
+	<div id="cat" style="display:none">Famous duos and trios<div id="letter">M</div></div>
 	<div id="play" class="content" style="display:none">
     	<div id="gameContent">
             <div id="input"><input type="text" /></div>
@@ -151,81 +177,12 @@ function setView(xview){	//0 is games list, 1 is game play, 2 is review, 3 is wa
         </div>
     </div>
     <div id="playerList" style="display:none">
-    	<div class="player">
-        	<div class="pun">eliot</div>
-            <div class="ppt">55</div>
-        </div>
-        <div class="player">
-        	<div class="pun">kenny</div>
-            <div class="ppt">5</div>
-        </div>
-        <div class="player">
-        	<div class="pun">steve</div>
-            <div class="ppt">555</div>
-        </div>
-        <div class="player">
-        	<div class="pun">dave</div>
-            <div class="ppt">55</div>
-        </div>
-        <div class="player">
-        	<div class="pun">paul</div>
-            <div class="ppt">5</div>
-        </div>
-        <div class="player">
-        	<div class="pun">bob</div>
-            <div class="ppt">555</div>
-        </div>
+
     </div>
     
     <!-- 0: GAMES LIST -->
     <div id="games" style="display:none">
-    	<div class="game">
-        	<div class="population">3<span class="popLimit">/6</span></div>
-            <div class="join">join</div>
-        </div>
-        <div class="game">
-        	<div class="population">3<span class="popLimit">/6</span></div>
-            <div class="join">join</div>
-        </div>
-        <div class="game">
-        	<div class="population">3<span class="popLimit">/6</span></div>
-            <div class="join">join</div>
-        </div>
-        <div class="game">
-        	<div class="population">3<span class="popLimit">/6</span></div>
-            <div class="join">join</div>
-        </div>
-        <div class="game">
-        	<div class="population">3<span class="popLimit">/6</span></div>
-            <div class="join">join</div>
-        </div>
-        <div class="game">
-        	<div class="population">3<span class="popLimit">/6</span></div>
-            <div class="join">join</div>
-        </div>
-        <div class="game">
-        	<div class="population">3<span class="popLimit">/6</span></div>
-            <div class="join">join</div>
-        </div>
-        <div class="game">
-        	<div class="population">3<span class="popLimit">/6</span></div>
-            <div class="join">join</div>
-        </div>
-        <div class="game">
-        	<div class="population">3<span class="popLimit">/6</span></div>
-            <div class="join">join</div>
-        </div>
-        <div class="game">
-        	<div class="population">3<span class="popLimit">/6</span></div>
-            <div class="join">join</div>
-        </div>
-        <div class="game">
-        	<div class="population">3<span class="popLimit">/6</span></div>
-            <div class="join">join</div>
-        </div>
-        <div class="game">
-        	<div class="newGame">new game</div>
-        </div>
+    	
     </div>
 </body>
 </html>
