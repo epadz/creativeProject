@@ -1,0 +1,206 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Scattergories</title>
+<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/themes/smoothness/jquery-ui.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
+<script src="/socket.io/socket.io.js"></script>
+<script type ="text/javascript">
+var socketio = io.connect();
+socketio.on('connect', function(){
+	//alert("connected");
+})
+
+
+
+function setView(xview){	//0 is games list, 1 is game play, 2 is review, 3 is waiting screen
+	switch(xview){
+		case 0:
+			$("#timerO").css("display","none");
+			$("#cat").css("display","none");
+			$("#play").css("display","none");
+			$("#review").css("display","none");
+			$("#playerList").css("display","none");
+			$("#games").css("display","block");
+			$("#waiting").css("display","none");
+			break;
+		case 1:
+			$("#timerO").css("display","block");
+			$("#cat").css("display","block");
+			$("#play").css("display","block");
+			$("#review").css("display","none");
+			$("#playerList").css("display","block");
+			$("#games").css("display","none");
+			$("#waiting").css("display","none");
+			break;
+		case 2:
+			$("#timerO").css("display","block");
+			$("#cat").css("display","block");
+			$("#play").css("display","none");
+			$("#review").css("display","block");
+			$("#playerList").css("display","block");
+			$("#games").css("display","none");
+			$("#waiting").css("display","none");
+			break;
+		case 3:
+			$("#timerO").css("display","none");
+			$("#cat").css("display","none");
+			$("#play").css("display","none");
+			$("#review").css("display","none");
+			$("#playerList").css("display","none");
+			$("#games").css("display","none");
+			$("#waiting").css("display","block");
+			break;
+	}
+}
+</script>
+<link href="style.css" rel="stylesheet" type="text/css">
+</head>
+
+<body>
+	<div id="waiting">
+    	waiting to join game
+        <div id="waitingBall"></div>
+    </div>
+	<div id="timerO" style="display:none"><div id="timerI"></div></div>
+	<div id="cat" style="display:none">Famous duos and trios<div id="letter" onClick="setView(0)">M</div></div>
+	<div id="play" class="content" style="display:none">
+    	<div id="gameContent">
+            <div id="input"><input type="text" /></div>
+            <div id="submit">GO</div>
+        </div>
+    </div>
+    <div id="review" class="content" style="display:none">
+    	<div id="answers">
+        	<div class="answer valid">
+            	<div class="aun">eliot</div>
+                <div class="answerText"><span>Micky and Minnie Mouse</span></div>
+                <div class="strikes">
+                	<div class="strike"></div><div class="strike"></div><div class="strike"></div><div class="strike"></div><div class="strike"></div>
+                    <div class="vote" style="display:none"></div>
+                </div>                
+            </div>
+            <div class="answer valid">
+            	<div class="aun">kenny</div>
+                <div class="answerText"><span>Mary, Peter and Paul</span></div>
+                <div class="strikes">
+                	<div class="strike"></div><div class="strike"></div><div class="strike"></div><div class="strike"></div><div class="strike"></div>
+                    <div class="vote"></div>
+                </div>                
+            </div>
+            <div class="answer flaggedAnswer">
+            	<div class="flag"></div>
+            	<div class="aun">steve</div>
+                <div class="answerText"><span>Mario and Luigi</span></div>
+                <div class="strikes">
+                	<div class="strike"></div><div class="strike"></div><div class="strike"></div><div class="strike"></div><div class="strike"></div>
+                    <div class="vote"></div>
+                </div>                
+            </div>
+            <div class="answer flaggedAnswer">
+            	<div class="flag"></div>
+            	<div class="aun">david</div>
+                <div class="answerText"><span>Mario and Luigy</span></div>
+                <div class="strikes">
+                	<div class="strike"></div><div class="strike"></div><div class="strike"></div><div class="strike"></div><div class="strike"></div>
+                    <div class="vote"></div>
+                </div>                
+            </div>
+            <div class="answer invalid">
+            	<div class="aun">paul</div>
+                <div class="answerText"><span>X</span></div>
+                <div class="strikes">
+                	<div class="strike struck"></div><div class="strike struck"></div><div class="strike struck"></div><div class="strike struck"></div><div class="strike struck"></div>
+                    <div class="vote" style="display:none"></div>
+                </div>                
+            </div>
+            <div class="answer invalid">
+            	<div class="aun">bob</div>
+                <div class="answerText"><span>Burt and Ernie</span></div>
+                <div class="strikes">
+                	<div class="strike struck"></div><div class="strike struck"></div><div class="strike struck"></div><div class="strike struck"></div><div class="strike struck"></div>
+                    <div class="vote" style="display:none"></div>
+                </div>                
+            </div>
+        </div>
+    </div>
+    <div id="playerList" style="display:none">
+    	<div class="player">
+        	<div class="pun">eliot</div>
+            <div class="ppt">55</div>
+        </div>
+        <div class="player">
+        	<div class="pun">kenny</div>
+            <div class="ppt">5</div>
+        </div>
+        <div class="player">
+        	<div class="pun">steve</div>
+            <div class="ppt">555</div>
+        </div>
+        <div class="player">
+        	<div class="pun">dave</div>
+            <div class="ppt">55</div>
+        </div>
+        <div class="player">
+        	<div class="pun">paul</div>
+            <div class="ppt">5</div>
+        </div>
+        <div class="player">
+        	<div class="pun">bob</div>
+            <div class="ppt">555</div>
+        </div>
+    </div>
+    <div id="games" style="display:none">
+    	<div class="game">
+        	<div class="population">3<span class="popLimit">/6</span></div>
+            <div class="join">join</div>
+        </div>
+        <div class="game">
+        	<div class="population">3<span class="popLimit">/6</span></div>
+            <div class="join">join</div>
+        </div>
+        <div class="game">
+        	<div class="population">3<span class="popLimit">/6</span></div>
+            <div class="join">join</div>
+        </div>
+        <div class="game">
+        	<div class="population">3<span class="popLimit">/6</span></div>
+            <div class="join">join</div>
+        </div>
+        <div class="game">
+        	<div class="population">3<span class="popLimit">/6</span></div>
+            <div class="join">join</div>
+        </div>
+        <div class="game">
+        	<div class="population">3<span class="popLimit">/6</span></div>
+            <div class="join">join</div>
+        </div>
+        <div class="game">
+        	<div class="population">3<span class="popLimit">/6</span></div>
+            <div class="join">join</div>
+        </div>
+        <div class="game">
+        	<div class="population">3<span class="popLimit">/6</span></div>
+            <div class="join">join</div>
+        </div>
+        <div class="game">
+        	<div class="population">3<span class="popLimit">/6</span></div>
+            <div class="join">join</div>
+        </div>
+        <div class="game">
+        	<div class="population">3<span class="popLimit">/6</span></div>
+            <div class="join">join</div>
+        </div>
+        <div class="game">
+        	<div class="population">3<span class="popLimit">/6</span></div>
+            <div class="join">join</div>
+        </div>
+        <div class="game">
+        	<div class="newGame">new game</div>
+        </div>
+    </div>
+</body>
+</html>

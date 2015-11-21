@@ -1,0 +1,405 @@
+@charset "utf-8";
+@import url(https://fonts.googleapis.com/css?family=Nunito:400,700|Roboto:400,700);
+/* CSS Document */
+body{
+	padding:0;
+	margin:0;
+	position:relative;
+	background-color:#FFE9CC;
+}
+textarea, input { outline: none; }
+
+.content{
+	width:100vw;
+	height:60vh;
+	position:absolute;	
+	top:0;
+	left:0;
+}
+#cat{
+	width:100vw;
+	height:15vh;
+	position:absolute;	
+	top:5vh;
+	bottom:85vh;
+	left:0;
+	text-align:center;
+	font-family: 'Nunito', sans-serif;
+	color:#F03744;
+	line-height:15vh;
+	font-size:10vh;
+	z-index:100;
+	-webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+#letter{
+	display:inline-block;
+	width:10vh;
+	height:10vh;
+	border-radius:1vh;
+	margin-left:5vw;
+	text-align:center;
+	line-height:10vh;
+	font-size:10vh;
+	color:#F0FC25;
+	background-color:#F03744;
+	box-shadow:0vw 1vh 0 .1vh #A80410;
+}
+#play{
+}
+#gameContent{
+	width:40vw;
+	height:20vh;
+	margin:20vh 30vw 0 30vw;
+	position:absolute;
+	background-color:#F03744;
+	border-radius:1vw;
+	overflow:hidden;
+}
+#gameContent div{
+	position:relative;
+}
+#timerO{
+	width:100vw;
+	height:3vh;
+	background-color:#6CB8BA;
+}
+#timerI{
+	width:100vw;
+	height:3vh;
+	background-image:url(stripes.png);
+	background-position: 200% center;
+	background-size:3vh 3vh;
+	border-top-right-radius:1vh;
+	border-bottom-right-radius:1vh;
+	/*transition:width 20s linear;
+	-webkit-transition:width 20s linear;
+	-moz-transition:width 20s linear;*/
+	
+	animation-name:timer;
+	animation-duration:20s;
+	animation-timing-function:linear;
+	-webkit-animation-name:timer;
+	-webkit-animation-duration:20s;
+	-webkit-animation-timing-function:linear;
+	-moz-animation-name:timer;
+	-moz-animation-duration:20s;
+	-moz-animation-timing-function:linear;
+}
+@keyframes timer {
+    from{
+		width: 0;
+		background-position: 0vw center;
+	}
+    to{
+		width:100vw;
+		background-position: 200vw center;
+	}
+}
+@-webkit-keyframes timer {
+    from{
+		width: 0;
+		background-position: 0vw center;
+	}
+    to{
+		width:100vw;
+		background-position: 200vw center;
+	}
+}
+#input{
+	width:40vw;
+	height:12vh;
+}
+#input input{
+	width:24vw;
+	height:7vh;
+	margin:2vh 8vw 3vh 8vw;
+	border-radius:1vh;
+	padding:0;
+	line-height:8vh;
+	text-align:center;
+	color:#09F;
+	border:.5vh solid #FCBC28;
+	box-sizing:border-box;
+	font-size:5vh;
+	font-family: 'Nunito', sans-serif;
+}
+#submit{
+	width:12vw;
+	height:6vh;
+	margin:0 14vw 2vh 14vw;
+	background-color:#F0FC25;
+	border-radius:6vh;
+	text-align:center;
+	line-height:6vh;
+	font-size:4vh;
+	font-family: 'Nunito', sans-serif;
+	color:#188183;
+	cursor:pointer;
+	box-shadow:0vw .5vh 0 .1vh #A2AA00;
+	-webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+#submit:active{
+	box-shadow:0vw .1vh 0 .1vh #A2AA00;
+	margin-top:.4vh;
+}
+#review{
+	
+}
+#answers{
+	width:100vw;
+	height:20vh;
+	position:absolute;	
+	top:25vh;
+	bottom:60vh;
+	left:0;
+	text-align:center;
+	font-family: 'Nunito', sans-serif;
+}
+.answer{
+	height:20vh;
+	width:12vw;
+	margin:0 2vw 0 2vw;
+	background-color:#FCBC28;
+	display:inline-block;
+}
+.aun{
+	width:12vw;
+	height:5vh;
+	background-color:#F03744;
+	color:#FFF;
+	text-align:center;
+	line-height:5vh;
+	font-size:4vh;
+}
+.answerText{
+	width:10vw;
+	height:13vh;
+	margin:1vh 1vw 1vh 1vw;
+	color:#F03744;
+	line-height:12vh;
+	font-size:3vh;
+	text-align:center;
+}
+.answerText span{
+	display: inline-block;
+	vertical-align: middle;
+	line-height:3vh;
+}
+.invalid, .invalid .answerText{
+	background-color:#CCCCCC !important;
+	color:#666 !important;
+}
+.vote{
+	width:4vw;
+	height:4vw;
+	display:inline-block;
+	background-color:#F03744;
+	border-radius:1vw;
+	color:#fff;
+	line-height:4vw;
+	text-align:center;
+	font-size:3vw;
+	top:23vh;
+	cursor:pointer;
+	box-shadow:0vw .3vw 0 .1vw #A80410;
+}
+.vote:before{
+	content:"X";
+}
+.vote:active{
+	box-shadow:0vw .1vw 0 .1vw #A80410;
+	margin-top:.2vw;
+}
+.strikes{
+	width:12vw;
+	height:2.4vw;
+	position:absolute;
+	top:22vh;
+}
+.strike{
+	height:2vw;
+	width:2vw;
+	line-height:2vw;
+	background-color:#6CB8BA;
+	color:#FFF;
+	border-radius:2vw;
+	font-size:1.5vw;
+	float:left;
+	margin:.2vw;
+}
+.strike:before{
+	content:"X";
+}
+.struck{
+	background-color:#F03744;
+}
+.flag{
+	width:12vw;
+	height:4vh;
+	position:absolute;
+	top:-5vh;
+	text-align:center;
+	color:#F03744;
+	line-height:4vh;
+	font-size:4vh;
+}
+.flag:before{
+	content:"!";
+}
+.flaggedAnswer{
+	box-shadow: 0 0 2vh 1vh #DA438D;
+}
+.valid{
+	box-shadow: 0 0 2vh 1vh #44CC2F;
+}
+#playerList{
+	width:100vw;
+	height:15vh;
+	position:absolute;	
+	top:85vh;
+	bottom:0;
+	left:0;
+	text-align:center;
+	-webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+.player{
+	height:15vh;
+	width:10vw;
+	background-color:#6CB8BA;
+	display:inline-block;
+	margin:0 2vw 0 2vw;
+	font-family: 'Nunito', sans-serif;
+}
+.pun{
+	width:10vw;
+	height:5vh;
+	background-color:#188183;
+	color:#FFF;
+	text-align:center;
+	line-height:5vh;
+	font-size:4vh;
+}
+.ppt{
+	width:10vw;
+	height:10vh;
+	color:#F0FC25;
+	text-align:center;
+	line-height:10vh;
+	font-size:6vh;
+}
+#top{
+	width:100vw;
+	height:10vh;
+	position:absolute;
+	top:0;
+	left:0;
+	font-family: 'Nunito', sans-serif;
+}
+#games{
+	width:60vw;
+	height:90vh;
+	top:10vh;
+	left:20vw;
+	position:absolute;
+	font-family: 'Nunito', sans-serif;
+}
+.game{
+	width:8vw;
+	height:16vh;
+	margin:0 1vw 5vh 1vw;
+	display:inline-block;
+	float:left;
+	background-color:#6CB8BA;
+	border-top:2vh solid #F0FC25;
+	cursor:pointer;
+}
+.population{
+	width:8vw;
+	height:11vh;
+	text-align:center;
+	line-height:11vh;
+	font-size:8vh;
+	color:#F0FC25;
+}
+.popLimit{
+	font-size:3vh;
+	color:#F03744;
+	
+}
+.join{
+	width:8vw;
+	height:5vh;
+	line-height:5vh;
+	text-align:center;
+	font-size:4vh;
+	background-color:#F0FC25;
+	color:#188183;
+}
+.newGame{
+	width:8vw;
+	height:15vh;
+	line-height:7vh;
+	font-size:5vh;
+	color:#F0FC25;
+	text-align:center;
+}
+#waiting{
+	width:100vw;
+	height:20vh;
+	top:20vh;
+	text-align:center;
+	line-height:20vh;
+	position:absolute;
+	font-size:15vh;
+	color:#188183;
+	font-family: 'Nunito', sans-serif;
+	
+	animation-name: colorFade;
+    animation-duration: 10s;
+    animation-iteration-count: infinite;
+	animation-timing-function: ease-in-out;
+	animation-direction: alternate;
+}
+#waitingBall{
+	position:fixed;
+	width:5vh;
+	height:5vh;
+	border-radius:5vh;
+	background-color:#188183;
+	top:40vh;
+	left:20vw;
+	animation-name: ballBounce;
+    animation-duration: 3s;
+    animation-iteration-count: infinite;
+	animation-timing-function: ease-in-out;
+	animation-direction: alternate;
+}
+@keyframes colorFade {
+    0%   {color: #FCBC28;}
+    33%  {color: #6CB8BA;}
+    66%  {color: #188183;}
+	100% {color: #F03744;}
+}
+@keyframes ballBounce {
+    from{
+		left:20vw;
+	}
+	to{
+		left:75vw;
+	}
+}
