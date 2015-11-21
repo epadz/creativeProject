@@ -116,8 +116,8 @@ textarea, input { outline: none; }
 }
 #input input{
 	width:24vw;
-	height:7vh;
-	margin:2vh 8vw 3vh 8vw;
+	height:8vh;
+	margin:2vh 8vw 2vh 8vw;
 	border-radius:1vh;
 	padding:0;
 	line-height:8vh;
@@ -125,8 +125,15 @@ textarea, input { outline: none; }
 	color:#09F;
 	border:.5vh solid #FCBC28;
 	box-sizing:border-box;
-	font-size:5vh;
+	font-size:4vh;
 	font-family: 'Nunito', sans-serif;
+}
+#input input:active{
+	padding:0;
+	line-height:8vh;
+	border:.5vh solid #FCBC28;
+	box-sizing:border-box;
+	margin:2vh 8vw 3vh 8vw;
 }
 #submit{
 	width:12vw;

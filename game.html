@@ -14,8 +14,28 @@ socketio.on('connect', function(){
 	//alert("connected");
 })
 
+//when it gets the list of rooms, create the html elements to show
+
+//when a current game is clicked to enter
+
+//when create new game is clicked
+
+//when it receives response that game has been created or joined and now the player must go to the waiting for more players screen
+
+//when it receives notification that the round has started and is given the list of players and their scores
+
+//when the player submits an answer -> change submit button to say waiting, make it not do anything on click and make input readonly 
+
+//when it receives notification that the round has ended and is given the array of answer objects
+
+//when the player downvotes an answer
+
+//when other players downvote an answer and/or an answer becomes invalid
+
+//when the player leaves the game
 
 
+//function to set the current view
 function setView(xview){	//0 is games list, 1 is game play, 2 is review, 3 is waiting screen
 	switch(xview){
 		case 0:
@@ -60,11 +80,14 @@ function setView(xview){	//0 is games list, 1 is game play, 2 is review, 3 is wa
 <link href="style.css" rel="stylesheet" type="text/css">
 </head>
 
-<body>
-	<div id="waiting">
+<body onLoad="setView(1)">
+	<!-- 3: WAITING SCREEN -->
+    <div id="waiting">
     	waiting to join game
         <div id="waitingBall"></div>
     </div>
+    
+    <!-- 1/2: GAME PLAY AND REVIEW SCREENS -->
 	<div id="timerO" style="display:none"><div id="timerI"></div></div>
 	<div id="cat" style="display:none">Famous duos and trios<div id="letter" onClick="setView(0)">M</div></div>
 	<div id="play" class="content" style="display:none">
@@ -153,6 +176,8 @@ function setView(xview){	//0 is games list, 1 is game play, 2 is review, 3 is wa
             <div class="ppt">555</div>
         </div>
     </div>
+    
+    <!-- 0: GAMES LIST -->
     <div id="games" style="display:none">
     	<div class="game">
         	<div class="population">3<span class="popLimit">/6</span></div>
