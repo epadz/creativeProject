@@ -166,9 +166,6 @@ io.sockets.on("connection", function(socket){
 	socket.pid = pid;
 	pid++;
 	
-	g = new game(gid, socket);
-	games[gid + ""] = g;
-	gid++;
 	
 	//function to send the list of current games and number of players in it
 	//call that function on connection
