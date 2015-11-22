@@ -164,6 +164,10 @@ function checkAnswers(xanswers, xletter){
 	//if it is good, calculate the potential points by counting the number of words longer than 1 letter that start with the letter
 	//
 	//once all the invalid answers have been weeded out, loop through the answers again. For each one (that is valid), loop through the rest of the answers (that are valid) (index of current one + 1 to length of array) and do string compare on the lowercase version of the string. 
+	//->There are a few considerations for desiging this algorithm. 
+	//--->we should only be paying attention to words in the answer starting with the letter. This will make life easier for us
+	//--->I think we should start with calculating the Damerau–Levenshtein distance https://en.wikipedia.org/wiki/Damerau%E2%80%93Levenshtein_distance . 
+	//--->we also need to be able to account for different ordering if there is more than one word. I would create an array for each of the two answers of the words from those answers starting with the letter and somehow run the string compare function to see if the answers are the same but in a different order (accounting for slight spelling variations)
 	//->if they are too similar (threshold TBD) set hasSimilar for both to true. The threshold should be a percentage calculated from the difference and the (average?) length i.e. 5% of the characters are different. This algorithm will be the most complicated part because we'll also have to check for things such as different orders etc.
 	//return the array	
 }
