@@ -58,8 +58,10 @@ socketio.on("startRound",function(data){
 
 //when other players downvote an answer and/or an answer becomes invalid
 
-//when the player leaves the game
-
+//when a player leaves the game
+socketio.on("insufficientPlayers",function(data){
+	setView(3);
+});
 
 //function to set the current view
 function setView(xview){	//0 is games list, 1 is game play, 2 is review, 3 is waiting screen
