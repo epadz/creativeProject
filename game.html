@@ -33,6 +33,16 @@ socketio.on("updatePlayerList",function(data){
 	$("#playerList").html(elems);
 });
 
+socketio.on("playerAdded",function(data){
+	var elem = '<div class="player" data-id="' + data.xpid + '"><div class="pun">' + data.xun + ' ' + data.xpid + '</div><div class="ppt">' + data.xscore + '</div></div>';
+	$("#playerList").append(elem);
+});
+
+socketio.on("playerLeft",function(data){
+	$("#playerList [data-id='" + data + "']").animate({top:"15vh"}, 500, function(){
+		$("#playerList [data-id='" + data + "']").remove();
+	});
+});
 //when a current game is clicked to enter
 function joinGame(xgid){
 	socketio.emit('joinGame', xgid);

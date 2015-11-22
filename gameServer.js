@@ -68,6 +68,19 @@ function pickCat(){
 	return cats[parseInt(Math.floor(Math.random() * 216))];
 }
 
+//function to return the list of current games and number of players in it
+function getOpenGames(){
+	xgdata = [];
+	for (var xgid in games) {
+		 if (games.hasOwnProperty(xgid)) {
+			  if(Object.keys(games[xgid + ""].members).length < 6){
+				  xgdata[xgid + ""] = Object.keys(games[xgid + ""].members).length;
+			  }
+		 }
+	}
+	return xgdata;
+}
+
 //an object that represents the game. A player can create a game. when a player creates and/or joins a game, set the game they joined to socket.game.
 //xgid is the id of the new game
 function game(xgid){
@@ -81,13 +94,16 @@ function game(xgid){
 	games[xgid + ""] = this;
 	
 	this.addMember = function(xplayer){//a socket
-		if(Object.keys(this.members).length < maxPlayers - 1){
+		if(Object.keys(this.members).length < maxPlayers){
 			this.members[xplayer.pid + ""] = xplayer;
 			xplayer.cgame = this;
+			io.sockets.to(this.gid + "").emit("playerAdded", {xpid: xplayer.pid, xun: xplayer.username, xscore: xplayer.score});
+			
 			xplayer.leave(xplayer.room);
 			xplayer.join(this.gid + "");
 			xplayer.room = this.gid + "";
-			io.sockets.to(this.gid + "").emit("updatePlayerList", this.getPlayerList());
+			xplayer.emit("updatePlayerList", this.getPlayerList());
+			io.sockets.emit("updateGameList", getOpenGames());
 			
 			if(Object.keys(this.members).length == minPlaters){
 				//game has reached enough people to start
@@ -102,6 +118,7 @@ function game(xgid){
 			return true;//says that the player was added
 		}
 		else{
+			io.sockets.emit("updateGameList", getOpenGames());
 			return false;//says the player was not added
 		}
 	}
@@ -109,12 +126,13 @@ function game(xgid){
 	this.removeMember = function(xplayer){
 		//if now the number of platers is bellow 3, show the waiting screen
 		delete this.members[xplayer.pid + ""];
+		io.sockets.to(this.gid + "").emit("playerLeft", xplayer.pid + "");
 		if(Object.keys(this.members).length < minPlaters){
 				//too few people to play game -> tell all sockets to display the waiting screen.
-				io.sockets.to(this.gid + "").emit("updatePlayerList", this.getPlayerList());
 				io.sockets.to(this.gid + "").emit("insufficientPlayers");
 		}
 		xplayer.leave(xplayer.room);
+		io.sockets.emit("updateGameList", getOpenGames());
 	}
 	this.getPlayerList = function(){
 		var playerInfo = {};
@@ -201,19 +219,6 @@ io.sockets.on("connection", function(socket){
 	
 	players[socket.pid + ""] = socket;
 	
-	//function to return the list of current games and number of players in it
-	function getOpenGames(){
-		xgdata = [];
-		for (var xgid in games) {
-			 if (games.hasOwnProperty(xgid)) {
-				  if(Object.keys(games[xgid + ""].members).length < 6){
-					  xgdata[xgid + ""] = Object.keys(games[xgid + ""].members).length;
-				  }
-			 }
-		}
-		return xgdata;
-	}
-	
 	//call that function on connection
 	socket.emit("updateGameList", getOpenGames());
 	
@@ -248,9 +253,11 @@ io.sockets.on("connection", function(socket){
 	
 	//function to handle a player leaving a game
 	socket.on('disconnect', function(){
-		if(typeof socket.pid !== 'undefined'){
+		if(typeof socket.cgame !== 'undefined'){
 			socket.cgame.removeMember(socket);
 		}
+		console.log("disconnect: ");
+		console.log(socket.id);
 	});
 	
 });
