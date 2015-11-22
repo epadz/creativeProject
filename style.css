@@ -283,6 +283,7 @@ textarea, input { outline: none; }
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
+	overflow:hidden;
 }
 .player{
 	height:15vh;
@@ -291,6 +292,22 @@ textarea, input { outline: none; }
 	display:inline-block;
 	margin:0 2vw 0 2vw;
 	font-family: 'Nunito', sans-serif;
+	position:relative;
+	top:0vh;
+	animation-name: playerPopUp;
+    animation-duration: .5s;
+	-webkit-animation-name: playerPopUp;
+    -webkit-animation-duration: .5s;
+	-moz-animation-name: playerPopUp;
+    -moz-animation-duration: .5s;
+}
+@keyframes playerPopUp {
+    from {top:15vh;}
+    to {top:0;}
+}
+@-webkit-keyframes playerPopUp {
+    from {top:15vh;}
+    to {top:0;}
 }
 .pun{
 	width:10vw;
