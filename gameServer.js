@@ -23,7 +23,7 @@ var db = mongoose.connection;
 var UserSchema = mongoose.Schema({
 	un: {type: String, required: true},
 	pw: {type: String, required: true},
-	score: {type: Number, required: true}
+	score: {type: Number, required: true},
 });
 
 UserSchema.plugin(autoIncrement.plugin, 'Users');
@@ -282,18 +282,58 @@ function answer(xplayer, xanswer){
 io.sockets.on("connection", function(socket){
 	// This callback runs when a new Socket.IO connection is established.
 	console.log("connect: ");
-	console.log(socket.id);
-	
-	socket.username = "bob";
-	socket.score = 0;
-	socket.pid = pid;
-	pid++;
-	
-	players[socket.pid + ""] = socket;
+	console.log(socket.id);	
 	
 	//call that function on connection
 	socket.emit("updateGameList", getOpenGames());
 	
+	//handle register
+	socket.on("register", function(data){
+		Users.findOne({ un: data.un + "" }, function(err, xuser){
+			if (err) return handleError(err);
+			if(xuser){
+				socket.emit("unTaken");
+			}else{
+				var newUser = new Users({un: data.un + "", pw: data.pw + "", score: 0});
+				newUser.save(function(err, usr){
+					if(err){
+						console.log(err);
+					}else{
+						socket.emit("registerSuccess", {id: usr._id, un: usr.un, score: usr.score});
+						socket.pid = parseInt(usr._id);
+						players[socket.pid + ""] = socket;
+						socket.username = usr.un;
+						socket.score = parseInt(usr.score);
+					}
+				});
+			}
+		});
+	});
+	
+	//handle login
+	socket.on("login", function(data){
+		Users.findOne({ un: data.un }, function(err, auser){
+			if (err) return handleError(err);
+			
+			if(auser){
+				auser.comparePassword(data.pw, function(err, isMatch) {
+					if (err) throw err;
+					if(isMatch){
+						socket.emit("loginSuccess", {id: auser._id, un: auser.un, score: auser.score});
+						socket.pid = parseInt(auser._id);
+						players[socket.pid + ""] = socket;
+						socket.username = auser.un;
+						socket.score = parseInt(auser.score);
+					}else{
+						socket.emit("badLogin");
+					}
+				});
+			}else{
+				socket.emit("badLogin");
+			}
+			
+		});
+	});
 	//function to handle joining a game
 	//->must tell all other players this
 	socket.on("joinGame", function(data){
