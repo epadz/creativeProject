@@ -278,6 +278,16 @@ function answer(xplayer, xanswer){
 	this.hasSimilar = false;
 }
 
+//function to give high scores list returns an array of objects with usernames and scores ordered first to last
+function giveHighScoresList(xusr, num){
+	Users.find().limit(parseInt(num)).sort("score").select("un score").exec(function(err, xusrs){
+		if(err){console.log(err);}
+		else{
+			console.log(xusrs);
+			xusr.emit("highScores", xusrs);
+		}
+	});
+}
 
 io.sockets.on("connection", function(socket){
 	// This callback runs when a new Socket.IO connection is established.
@@ -334,6 +344,18 @@ io.sockets.on("connection", function(socket){
 			
 		});
 	});
+	
+	//handle logout
+	socket.on("logout", function(){
+		if(typeof socket.cgame !== 'undefined'){
+			socket.cgame.removeMember(socket);
+		}
+		delete socket.pid;
+		delete socket.username;
+		delete socket.score;
+		socket.emit("logoutSuccess");
+	});
+	
 	//function to handle joining a game
 	//->must tell all other players this
 	socket.on("joinGame", function(data){
@@ -372,4 +394,7 @@ io.sockets.on("connection", function(socket){
 		console.log(socket.id);
 	});
 	
+	socket.on("getHighScores", function(){
+		giveHighScoresList(socket, 50);
+	});
 });

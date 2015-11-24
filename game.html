@@ -133,7 +133,25 @@ socketio.on("loginSuccess", function(data){
 	$("#tbUn").html(ausername + "");
 	$("#tbPts").html(ascore + " points");
 });
+//logout
+function logout(){
+	socketio.emit("logout");
+}
+socketio.on("logoutSuccess", function(){
+	delete auid;
+	delete ascore;
+	delete ausername;
+	setView(4);
+	
+});
 
+//high scores list
+function askHighScores(){
+	socketio.emit("getHighScores");
+}
+socketio.on("highScores", function(data){
+	console.log(data);
+});
 //function to set the current view
 function setView(xview){	//0 is games list, 1 is game play, 2 is review, 3 is waiting screen, 4 is login and register
 	switch(xview){
@@ -190,6 +208,7 @@ function setView(xview){	//0 is games list, 1 is game play, 2 is review, 3 is wa
 			$("#games").css("display","none");
 			$("#waiting").css("display","none");
 			$("#logreg").css("display","block");
+			$("#lrMessage").css("display","none");
 			$("#topBar").css("display","none");
 			break;
 	}
@@ -201,7 +220,7 @@ function setView(xview){	//0 is games list, 1 is game play, 2 is review, 3 is wa
 <body onLoad="setView(4)">
 	<!-- TOP BAR -->
     <div id="topBar" style="display:none">
-    	<span id="tbUn">NULL</span>&nbsp;&nbsp;&nbsp;<span id="tbLo">log out</span>&nbsp;&nbsp;&nbsp;<span id="tbPts">points</span>&nbsp;&nbsp;&nbsp;<span id="tbRk">top 10%</span>&nbsp;&nbsp;&nbsp;<span id="tbHs">high scores</span>
+    	<span id="tbUn">NULL</span>&nbsp;&nbsp;&nbsp;<span id="tbLo" style="cursor:pointer" onClick="logout()">[log out]</span>&nbsp;&nbsp;&nbsp;<span id="tbPts">points</span>&nbsp;&nbsp;&nbsp;<span id="tbRk">top 10%</span>&nbsp;&nbsp;&nbsp;<span id="tbHs" onClick="askHighScores()">high scores</span>
     </div>
 	<!-- 3: WAITING SCREEN -->
     <div id="waiting">
@@ -285,10 +304,12 @@ function setView(xview){	//0 is games list, 1 is game play, 2 is review, 3 is wa
     <div id="logreg" style="display:block">
 		<div class="lrTitle">login</div>
         <div id="lrMessage"></div>
-    	<div id="login">        	
+    	<div id="login">
+        <form id="loginForm" onsubmit="login(); return false;" method="post">        	
         	<input id="un" type="text" placeholder="username" />
-            <input id="pw" type="password" placeholder="password" />
+            <input id="pw" type="password" placeholder="password" /><input type="submit" style="display:none" />
             <div class="sublog" onClick="login()">login</div><div class="sublog" onClick="register()">register</div>
+        </form>
         </div>        
     </div>
 </body>
