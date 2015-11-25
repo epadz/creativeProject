@@ -3,7 +3,79 @@ var http = require("http"),
 	url = require('url'),
 	path = require('path'),
 	mime = require('mime'),
-	fs = require("fs");
+	fs = require("fs"),
+	bcrypt = require('bcrypt'),
+	mongoose = require("mongoose"),
+	SALT_WORK_FACTOR = 10,
+	autoIncrement = require('mongoose-auto-increment');
+	
+monCon = mongoose.connect("mongodb://localhost/scat", function(err){
+	if(err){
+		console.log(err +"");
+	}
+	console.log("connected to mongo");
+});
+
+autoIncrement.initialize(monCon);
+
+var db = mongoose.connection;
+
+var UserSchema = mongoose.Schema({
+	un: {type: String, required: true},
+	pw: {type: String, required: true},
+	score: {type: Number, required: true},
+});
+
+UserSchema.plugin(autoIncrement.plugin, 'Users');
+
+UserSchema.pre('save', function(next) {
+    var user = this;
+    // only hash the password if it has been modified (or is new)
+    if (!user.isModified('pw')) return next();
+
+    // generate a salt
+    bcrypt.genSalt(SALT_WORK_FACTOR, function(err, salt) {
+		if (err) return next(err);
+		
+        // hash the password using our new salt
+        bcrypt.hash(user.pw, salt, function(err, hash) {
+			if (err) return next(err);
+
+            // override the cleartext password with the hashed one
+            user.pw = hash;
+            next();
+        });
+    });
+});
+
+UserSchema.methods.comparePassword = function(candidatePassword, cb) {
+    bcrypt.compare(candidatePassword, this.pw, function(err, isMatch) {
+        if (err) return cb(err);
+        cb(null, isMatch);
+    });
+};
+
+var Users = mongoose.model("Users", UserSchema);
+/*
+var testUser = new Users({un: "mikef", pw: "abc", score: 0});
+
+testUser.save(function(err, usr){
+	if(err){
+		console.log(err);
+	}
+	console.log(usr);
+});
+
+Users.findOne({ _id: 16 }, function(err, auser){
+	if (err) return handleError(err);
+	
+	auser.comparePassword('abc', function(err, isMatch) {
+        if (err) throw err;
+        console.log('abc:', isMatch); // -&gt; Password123: true
+    });
+	
+});
+*/
 // Retrieve
 var app = http.createServer(function(req, resp){
 	var filename = path.join(__dirname, "", url.parse(req.url).pathname);
@@ -206,21 +278,83 @@ function answer(xplayer, xanswer){
 	this.hasSimilar = false;
 }
 
+//function to give high scores list returns an array of objects with usernames and scores ordered first to last
+function giveHighScoresList(xusr, num){
+	Users.find().limit(parseInt(num)).sort("score").select("un score").exec(function(err, xusrs){
+		if(err){console.log(err);}
+		else{
+			console.log(xusrs);
+			xusr.emit("highScores", xusrs);
+		}
+	});
+}
 
 io.sockets.on("connection", function(socket){
 	// This callback runs when a new Socket.IO connection is established.
 	console.log("connect: ");
-	console.log(socket.id);
-	
-	socket.username = "bob";
-	socket.score = 0;
-	socket.pid = pid;
-	pid++;
-	
-	players[socket.pid + ""] = socket;
+	console.log(socket.id);	
 	
 	//call that function on connection
 	socket.emit("updateGameList", getOpenGames());
+	
+	//handle register
+	socket.on("register", function(data){
+		Users.findOne({ un: data.un + "" }, function(err, xuser){
+			if (err) return handleError(err);
+			if(xuser){
+				socket.emit("unTaken");
+			}else{
+				var newUser = new Users({un: data.un + "", pw: data.pw + "", score: 0});
+				newUser.save(function(err, usr){
+					if(err){
+						console.log(err);
+					}else{
+						socket.emit("registerSuccess", {id: usr._id, un: usr.un, score: usr.score});
+						socket.pid = parseInt(usr._id);
+						players[socket.pid + ""] = socket;
+						socket.username = usr.un;
+						socket.score = parseInt(usr.score);
+					}
+				});
+			}
+		});
+	});
+	
+	//handle login
+	socket.on("login", function(data){
+		Users.findOne({ un: data.un }, function(err, auser){
+			if (err) return handleError(err);
+			
+			if(auser){
+				auser.comparePassword(data.pw, function(err, isMatch) {
+					if (err) throw err;
+					if(isMatch){
+						socket.emit("loginSuccess", {id: auser._id, un: auser.un, score: auser.score});
+						socket.pid = parseInt(auser._id);
+						players[socket.pid + ""] = socket;
+						socket.username = auser.un;
+						socket.score = parseInt(auser.score);
+					}else{
+						socket.emit("badLogin");
+					}
+				});
+			}else{
+				socket.emit("badLogin");
+			}
+			
+		});
+	});
+	
+	//handle logout
+	socket.on("logout", function(){
+		if(typeof socket.cgame !== 'undefined'){
+			socket.cgame.removeMember(socket);
+		}
+		delete socket.pid;
+		delete socket.username;
+		delete socket.score;
+		socket.emit("logoutSuccess");
+	});
 	
 	//function to handle joining a game
 	//->must tell all other players this
@@ -260,4 +394,7 @@ io.sockets.on("connection", function(socket){
 		console.log(socket.id);
 	});
 	
+	socket.on("getHighScores", function(){
+		giveHighScoresList(socket, 50);
+	});
 });

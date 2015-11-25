@@ -9,6 +9,10 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
 <script src="/socket.io/socket.io.js"></script>
 <script type ="text/javascript">
+var auid;
+var ausername;
+var ascore;
+
 var socketio = io.connect();
 socketio.on('connect', function(){
 	//alert("connected");
@@ -28,7 +32,7 @@ socketio.on("updateGameList",function(data){
 socketio.on("updatePlayerList",function(data){
 	var elems = "";
 	$.each(data, function(xpid, xp){
-		elems += '<div class="player" data-id="' + xpid + '"><div class="pun">' + xp.un + ' ' + xpid + '</div><div class="ppt">' + xp.score + '</div></div>';
+		elems += '<div class="player" data-id="' + xpid + '"><div class="pun">' + xp.un + '</div><div class="ppt">' + xp.score + '</div></div>';
 	});
 	$("#playerList").html(elems);
 });
@@ -73,8 +77,83 @@ socketio.on("insufficientPlayers",function(data){
 	setView(3);
 });
 
+//login functions
+//register
+function register(){
+	un = $("#un").val() + "";
+	pw = $("#pw").val() + "";
+	
+	if(un != "" && un != " " && pw != "" && pw != " "){
+		socketio.emit('register', {un: un, pw: pw});
+	}else{
+		$("#lrMessage").css("display","block");
+		$("#lrMessage").html("Please enter valid input");
+	}
+}
+//register response
+socketio.on("unTaken", function(data){
+	$("#lrMessage").css("display","block");
+	$("#lrMessage").html("That username is taken. Please try a different one");
+});
+socketio.on("registerSuccess", function(data){
+	auid = parseInt(data.id);
+	ascore = parseInt(data.score);
+	ausername = data.un;
+	setView(0);
+	$("#un").val('');
+	$("#pw").val('');
+	$("#tbUn").html(ausername + "");
+	$("#tbPts").html(ascore + " points");
+});
+
+//login
+function login(){
+	un = $("#un").val() + "";
+	pw = $("#pw").val() + "";
+	
+	if(un != "" && un != " " && pw != "" && pw != " "){
+		socketio.emit('login', {un: un, pw: pw});
+	}else{
+		$("#lrMessage").css("display","block");
+		$("#lrMessage").html("Please enter valid input");
+	}
+}
+//login response
+socketio.on("badLogin", function(data){
+	$("#lrMessage").css("display","block");
+	$("#lrMessage").html("Incorrect username or password!");
+});
+socketio.on("loginSuccess", function(data){
+	auid = parseInt(data.id);
+	ascore = parseInt(data.score);
+	ausername = data.un;
+	setView(0);
+	$("#un").val('');
+	$("#pw").val('');
+	$("#tbUn").html(ausername + "");
+	$("#tbPts").html(ascore + " points");
+});
+//logout
+function logout(){
+	socketio.emit("logout");
+}
+socketio.on("logoutSuccess", function(){
+	delete auid;
+	delete ascore;
+	delete ausername;
+	setView(4);
+	
+});
+
+//high scores list
+function askHighScores(){
+	socketio.emit("getHighScores");
+}
+socketio.on("highScores", function(data){
+	console.log(data);
+});
 //function to set the current view
-function setView(xview){	//0 is games list, 1 is game play, 2 is review, 3 is waiting screen
+function setView(xview){	//0 is games list, 1 is game play, 2 is review, 3 is waiting screen, 4 is login and register
 	switch(xview){
 		case 0:
 			$("#timerO").css("display","none");
@@ -84,6 +163,8 @@ function setView(xview){	//0 is games list, 1 is game play, 2 is review, 3 is wa
 			$("#playerList").css("display","none");
 			$("#games").css("display","block");
 			$("#waiting").css("display","none");
+			$("#logreg").css("display","none");
+			$("#topBar").css("display","block");
 			break;
 		case 1:
 			$("#timerO").css("display","block");
@@ -93,6 +174,8 @@ function setView(xview){	//0 is games list, 1 is game play, 2 is review, 3 is wa
 			$("#playerList").css("display","block");
 			$("#games").css("display","none");
 			$("#waiting").css("display","none");
+			$("#logreg").css("display","none");
+			$("#topBar").css("display","block");
 			break;
 		case 2:
 			$("#timerO").css("display","block");
@@ -102,6 +185,8 @@ function setView(xview){	//0 is games list, 1 is game play, 2 is review, 3 is wa
 			$("#playerList").css("display","block");
 			$("#games").css("display","none");
 			$("#waiting").css("display","none");
+			$("#logreg").css("display","none");
+			$("#topBar").css("display","block");
 			break;
 		case 3:
 			$("#timerO").css("display","none");
@@ -111,6 +196,20 @@ function setView(xview){	//0 is games list, 1 is game play, 2 is review, 3 is wa
 			$("#playerList").css("display","block");
 			$("#games").css("display","none");
 			$("#waiting").css("display","block");
+			$("#logreg").css("display","none");
+			$("#topBar").css("display","block");
+			break;
+		case 4:
+			$("#timerO").css("display","none");
+			$("#cat").css("display","none");
+			$("#play").css("display","none");
+			$("#review").css("display","none");
+			$("#playerList").css("display","none");
+			$("#games").css("display","none");
+			$("#waiting").css("display","none");
+			$("#logreg").css("display","block");
+			$("#lrMessage").css("display","none");
+			$("#topBar").css("display","none");
 			break;
 	}
 }
@@ -118,7 +217,11 @@ function setView(xview){	//0 is games list, 1 is game play, 2 is review, 3 is wa
 <link href="style.css" rel="stylesheet" type="text/css">
 </head>
 
-<body onLoad="setView(0)">
+<body onLoad="setView(4)">
+	<!-- TOP BAR -->
+    <div id="topBar" style="display:none">
+    	<span id="tbUn">NULL</span>&nbsp;&nbsp;&nbsp;<span id="tbLo" style="cursor:pointer" onClick="logout()">[log out]</span>&nbsp;&nbsp;&nbsp;<span id="tbPts">points</span>&nbsp;&nbsp;&nbsp;<span id="tbRk">top 10%</span>&nbsp;&nbsp;&nbsp;<span id="tbHs" onClick="askHighScores()">high scores</span>
+    </div>
 	<!-- 3: WAITING SCREEN -->
     <div id="waiting">
     	waiting to join game
@@ -195,6 +298,19 @@ function setView(xview){	//0 is games list, 1 is game play, 2 is review, 3 is wa
     <!-- 0: GAMES LIST -->
     <div id="games" style="display:none">
     	
+    </div>
+    
+    <!-- login / register-->
+    <div id="logreg" style="display:block">
+		<div class="lrTitle">login</div>
+        <div id="lrMessage"></div>
+    	<div id="login">
+        <form id="loginForm" onsubmit="login(); return false;" method="post">        	
+        	<input id="un" type="text" placeholder="username" />
+            <input id="pw" type="password" placeholder="password" /><input type="submit" style="display:none" />
+            <div class="sublog" onClick="login()">login</div><div class="sublog" onClick="register()">register</div>
+        </form>
+        </div>        
     </div>
 </body>
 </html>
