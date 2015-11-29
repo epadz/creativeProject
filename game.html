@@ -64,13 +64,21 @@ socketio.on("startRound",function(data){
 	setView(1);
 	$("#cat").html(data.cat + '<div id="letter">' + data.letter + '</div>');
 });
-//when the player submits an answer -> change submit button to say waiting, make it not do anything on click and make input readonly 
+//when the player submits an answer -> change submit button to say waiting, make it not do anything on click and make input readonly
+//inline function
 
 //when it receives notification that the round has ended and is given the array of answer objects
-
+socketio.on("endRound",function(data){
+  socketio.emit('submitAnswer', data);
+  $("#cat").html(data.cat + '<div id="letter">' + data.curSubmissions + '</div>');
+});
 //when the player downvotes an answer
+socketio.on("downvote",function(data){
+  $("#cat").html(data.cat + '<div id="letter">' + data.curSubmissions[xplayerID].points + '</div>');
+});
 
 //when other players downvote an answer and/or an answer becomes invalid
+
 
 //when a player leaves the game
 socketio.on("insufficientPlayers",function(data){
@@ -82,7 +90,7 @@ socketio.on("insufficientPlayers",function(data){
 function register(){
 	un = $("#un").val() + "";
 	pw = $("#pw").val() + "";
-	
+
 	if(un != "" && un != " " && pw != "" && pw != " "){
 		socketio.emit('register', {un: un, pw: pw});
 	}else{
@@ -110,7 +118,7 @@ socketio.on("registerSuccess", function(data){
 function login(){
 	un = $("#un").val() + "";
 	pw = $("#pw").val() + "";
-	
+
 	if(un != "" && un != " " && pw != "" && pw != " "){
 		socketio.emit('login', {un: un, pw: pw});
 	}else{
@@ -142,7 +150,7 @@ socketio.on("logoutSuccess", function(){
 	delete ascore;
 	delete ausername;
 	setView(4);
-	
+
 });
 
 //high scores list
@@ -227,14 +235,14 @@ function setView(xview){	//0 is games list, 1 is game play, 2 is review, 3 is wa
     	waiting to join game
         <div id="waitingBall"></div>
     </div>
-    
+
     <!-- 1/2: GAME PLAY AND REVIEW SCREENS -->
 	<div id="timerO" style="display:none"><div id="timerI"></div></div>
 	<div id="cat" style="display:none">Famous duos and trios<div id="letter">M</div></div>
 	<div id="play" class="content" style="display:none">
     	<div id="gameContent">
             <div id="input"><input type="text" /></div>
-            <div id="submit">GO</div>
+            <div id="submit"onclick="$('#submit').html('waiting'); submitCall();">GO</div>
         </div>
     </div>
     <div id="review" class="content" style="display:none">
@@ -245,7 +253,7 @@ function setView(xview){	//0 is games list, 1 is game play, 2 is review, 3 is wa
                 <div class="strikes">
                 	<div class="strike"></div><div class="strike"></div><div class="strike"></div><div class="strike"></div><div class="strike"></div>
                     <div class="vote" style="display:none"></div>
-                </div>                
+                </div>
             </div>
             <div class="answer valid">
             	<div class="aun">kenny</div>
@@ -253,7 +261,7 @@ function setView(xview){	//0 is games list, 1 is game play, 2 is review, 3 is wa
                 <div class="strikes">
                 	<div class="strike"></div><div class="strike"></div><div class="strike"></div><div class="strike"></div><div class="strike"></div>
                     <div class="vote"></div>
-                </div>                
+                </div>
             </div>
             <div class="answer flaggedAnswer">
             	<div class="flag"></div>
@@ -262,7 +270,7 @@ function setView(xview){	//0 is games list, 1 is game play, 2 is review, 3 is wa
                 <div class="strikes">
                 	<div class="strike struck"></div><div class="strike struck"></div><div class="strike"></div><div class="strike"></div><div class="strike"></div>
                     <div class="vote"></div>
-                </div>                
+                </div>
             </div>
             <div class="answer flaggedAnswer">
             	<div class="flag"></div>
@@ -271,7 +279,7 @@ function setView(xview){	//0 is games list, 1 is game play, 2 is review, 3 is wa
                 <div class="strikes">
                 	<div class="strike struck"></div><div class="strike struck"></div><div class="strike"></div><div class="strike"></div><div class="strike"></div>
                     <div class="vote"></div>
-                </div>                
+                </div>
             </div>
             <div class="answer invalid">
             	<div class="aun">paul</div>
@@ -279,7 +287,7 @@ function setView(xview){	//0 is games list, 1 is game play, 2 is review, 3 is wa
                 <div class="strikes">
                 	<div class="strike struck"></div><div class="strike struck"></div><div class="strike struck"></div><div class="strike struck"></div><div class="strike struck"></div>
                     <div class="vote" style="display:none"></div>
-                </div>                
+                </div>
             </div>
             <div class="answer invalid">
             	<div class="aun">bob</div>
@@ -287,30 +295,30 @@ function setView(xview){	//0 is games list, 1 is game play, 2 is review, 3 is wa
                 <div class="strikes">
                 	<div class="strike struck"></div><div class="strike struck"></div><div class="strike struck"></div><div class="strike struck"></div><div class="strike struck"></div>
                     <div class="vote" style="display:none"></div>
-                </div>                
+                </div>
             </div>
         </div>
     </div>
     <div id="playerList" style="display:none">
 
     </div>
-    
+
     <!-- 0: GAMES LIST -->
     <div id="games" style="display:none">
-    	
+
     </div>
-    
+
     <!-- login / register-->
     <div id="logreg" style="display:block">
 		<div class="lrTitle">login</div>
         <div id="lrMessage"></div>
     	<div id="login">
-        <form id="loginForm" onsubmit="login(); return false;" method="post">        	
+        <form id="loginForm" onsubmit="login(); return false;" method="post">
         	<input id="un" type="text" placeholder="username" />
             <input id="pw" type="password" placeholder="password" /><input type="submit" style="display:none" />
             <div class="sublog" onClick="login()">login</div><div class="sublog" onClick="register()">register</div>
         </form>
-        </div>        
+        </div>
     </div>
 </body>
 </html>
