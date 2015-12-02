@@ -651,7 +651,7 @@ io.sockets.on("connection", function(socket){
 });
 
 //Algorithm form http://stackoverflow.com/questions/22308014/damerau-levenshtein-distance-implementation
-//
+//Based on https://en.wikipedia.org/wiki/Damerau%E2%80%93Levenshtein_distance
 function levenshteinWeighted(seq1,seq2){
     var len1=seq1.length;
     var len2=seq2.length;
