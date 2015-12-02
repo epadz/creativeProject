@@ -38,7 +38,7 @@ socketio.on("updatePlayerList",function(data){
 });
 
 socketio.on("playerAdded",function(data){
-	var elem = '<div class="player" data-id="' + data.xpid + '"><div class="pun">' + data.xun + ' ' + data.xpid + '</div><div class="ppt">' + data.xscore + '</div></div>';
+	var elem = '<div class="player" data-id="' + data.xpid + '"><div class="pun">' + data.xun + '</div><div class="ppt">' + data.xscore + '</div></div>';
 	$("#playerList").append(elem);
 });
 
@@ -46,6 +46,7 @@ socketio.on("playerLeft",function(data){
 	$("#playerList [data-id='" + data + "']").animate({top:"15vh"}, 500, function(){
 		$("#playerList [data-id='" + data + "']").remove();
 	});
+	$("#answers [data-pid='" + data + "']").remove();
 });
 //when a current game is clicked to enter
 function joinGame(xgid){
@@ -63,15 +64,75 @@ socketio.on("joined_wait",function(data){
 socketio.on("startRound",function(data){
 	setView(1);
 	$("#cat").html(data.cat + '<div id="letter">' + data.letter + '</div>');
+	$("#submit").attr("onClick", "subAnswer()");
+	$("#ansInput").val("");
+	$("#ansInput").attr("name", Math.random().toString(36).substr(2, 5) + "");
+	$("#doneReviewing").css("display","none");
+	setTimer(data.dur);
 });
 //when the player submits an answer -> change submit button to say waiting, make it not do anything on click and make input readonly 
-
+function subAnswer(){
+	if($("#ansInput").val().length > 0){
+		socketio.emit('subAnswer', $("#ansInput").val() + "");
+		$("#submit").attr("onClick", "");
+	}
+}
+socketio.on("reviewScreen", function(){
+	setView(2);
+	$("#answers").html('<div class="waitingForAnswers">waiting for other players to answer</div>');
+});
 //when it receives notification that the round has ended and is given the array of answer objects
-
+socketio.on("roundOver", function(data){
+	setView(2);
+	ihtml = "";
+	console.log(data);
+	$.each(data.roundSubmissions, function(xpid, xans){
+		var aClass = "valid";
+		var aStruck = "";
+		var aCantVote = "";
+		var ansDisp = xans.answer;
+		if(xans.answer == null || xans.answer == ""){
+			ansDisp = "[no answer]";
+		}
+		if(xans.isInvalid){
+			aClass = "invalid";
+			aStruck = " struck";
+			aCantVote = ' style="display:none"';
+		}else if(xans.hasSimilar){
+			aClass = "flaggedAnswer";
+		}
+		if(xans.playerID == auid && !xans.isInvalid){
+			aCantVote = ' style="display:none"';
+		}
+		
+		ihtml += '<div class="answer ' + aClass + '" data-pid="' + xans.playerID + '"><div class="aun">' + xans.playerUN + '</div><div class="answerText"><span>' + ansDisp + '</span></div><div class="strikes">';
+		for(i = 1; i < Object.keys(data.roundSubmissions).length; i++){
+			ihtml += '<div class="strike' + aStruck + '"></div>';
+		}
+		ihtml += '<div class="vote"' + aCantVote + ' onclick="downvote(' + xans.playerID + ')"></div></div></div>';
+	});
+	$("#answers").html(ihtml);
+	$("#doneReviewing").css("display","inline");
+	setTimer(data.reviewDuration);
+});
 //when the player downvotes an answer
-
+function downvote(xpid){
+	socketio.emit("downvote", xpid);
+	$("#answers [data-pid='" + xpid + "'] .vote").remove();
+}
 //when other players downvote an answer and/or an answer becomes invalid
-
+socketio.on("updateVotes",function(data){
+	var xans = $("[data-pid='" + data.xpid + "']").eq(0);
+	if(data.invalid){
+		$(xans).removeClass("valid");
+		$(xans).addClass("invalid");
+		$(xans).find(".strike").addClass("struck");
+	}else{
+		for(var i = 0; i < parseInt(data.downvotes); i++){
+			$(xans).find(".strike").eq(i).addClass("struck");
+		}		
+	}
+});
 //when a player leaves the game
 socketio.on("insufficientPlayers",function(data){
 	setView(3);
@@ -144,14 +205,38 @@ socketio.on("logoutSuccess", function(){
 	setView(4);
 	
 });
-
+//exits game
+function goback(){
+	socketio.emit("goback");
+	setView(0);
+}
 //high scores list
 function askHighScores(){
 	socketio.emit("getHighScores");
 }
 socketio.on("highScores", function(data){
-	console.log(data);
+	var ihtml = "";
+	for(i = 0; i < data.length; i++){
+		ihtml += '<tr><td>' + (i+1) + '</td><td>' + data[i].un + '</td><td>' + data[i].score + '</td></tr>';
+	}
+	$("#hsTable tbody").html(ihtml);
+	$("#highScores").css("display","inline");
 });
+
+//resets timer div
+function setTimer(xmilseconds){
+	$("#timerI").stop(true, true);
+	$("#timerI").css("width","0vw");
+	$("#timerI").animate({width:"100vw"}, xmilseconds, "linear", function(){
+		
+	});
+}
+//tells the server the player is done reviewing
+function doneReviewing(){
+	socketio.emit("doneReviewing");
+	$("#doneReviewing").css("display","none");
+	$(".vote").remove();
+}
 //function to set the current view
 function setView(xview){	//0 is games list, 1 is game play, 2 is review, 3 is waiting screen, 4 is login and register
 	switch(xview){
@@ -220,7 +305,7 @@ function setView(xview){	//0 is games list, 1 is game play, 2 is review, 3 is wa
 <body onLoad="setView(4)">
 	<!-- TOP BAR -->
     <div id="topBar" style="display:none">
-    	<span id="tbUn">NULL</span>&nbsp;&nbsp;&nbsp;<span id="tbLo" style="cursor:pointer" onClick="logout()">[log out]</span>&nbsp;&nbsp;&nbsp;<span id="tbPts">points</span>&nbsp;&nbsp;&nbsp;<span id="tbRk">top 10%</span>&nbsp;&nbsp;&nbsp;<span id="tbHs" onClick="askHighScores()">high scores</span>
+    	<span onClick="goback()" id="tbGb">go back</span>&nbsp;&nbsp;&nbsp;<span id="tbUn">NULL</span>&nbsp;&nbsp;&nbsp;<span id="tbLo" style="cursor:pointer" onClick="logout()">[log out]</span>&nbsp;&nbsp;&nbsp;<span id="tbPts">points</span>&nbsp;&nbsp;&nbsp;<span id="tbHs" onClick="askHighScores()">high scores</span>
     </div>
 	<!-- 3: WAITING SCREEN -->
     <div id="waiting">
@@ -233,13 +318,13 @@ function setView(xview){	//0 is games list, 1 is game play, 2 is review, 3 is wa
 	<div id="cat" style="display:none">Famous duos and trios<div id="letter">M</div></div>
 	<div id="play" class="content" style="display:none">
     	<div id="gameContent">
-            <div id="input"><input type="text" /></div>
-            <div id="submit">GO</div>
+            <div id="input"><form id="ansForm" onsubmit="subAnswer(); return false;" method="post"><input type="text" id="ansInput" name="" /><input type="submit" style="display:none" /></form></div>
+            <div id="submit" onClick="subAnswer()">GO</div>
         </div>
     </div>
     <div id="review" class="content" style="display:none">
     	<div id="answers">
-        	<div class="answer valid">
+        	/*<div class="answer valid">
             	<div class="aun">eliot</div>
                 <div class="answerText"><span>Micky and Minnie Mouse</span></div>
                 <div class="strikes">
@@ -288,8 +373,10 @@ function setView(xview){	//0 is games list, 1 is game play, 2 is review, 3 is wa
                 	<div class="strike struck"></div><div class="strike struck"></div><div class="strike struck"></div><div class="strike struck"></div><div class="strike struck"></div>
                     <div class="vote" style="display:none"></div>
                 </div>                
-            </div>
+            </div>*/
+            <div id="waitingForAnswers">waiting for other players to answer</div>
         </div>
+        <div id="doneReviewing" onClick="doneReviewing()" style="display:none"></div>
     </div>
     <div id="playerList" style="display:none">
 
@@ -311,6 +398,24 @@ function setView(xview){	//0 is games list, 1 is game play, 2 is review, 3 is wa
             <div class="sublog" onClick="login()">login</div><div class="sublog" onClick="register()">register</div>
         </form>
         </div>        
+    </div>
+    
+    <!-- high scores listing-->
+    <div id="highScores" style="display:none">
+    	<table id="hsTable">
+        	<thead>
+            	<th>
+                	<tr>
+                    	<th>Rank</th>
+                        <th>User</th>
+                        <th>Score</th>
+                    </tr>
+                </th>
+            </thead>
+            <tbody>
+            	
+            </tbody>
+        </table>
     </div>
 </body>
 </html>

@@ -61,6 +61,7 @@ textarea, input { outline: none; }
 	color:#F0FC25;
 	background-color:#F03744;
 	box-shadow:0vw 1vh 0 .1vh #A80410;
+	text-transform:uppercase;
 }
 #play{
 }
@@ -80,9 +81,12 @@ textarea, input { outline: none; }
 	width:100vw;
 	height:3vh;
 	background-color:#6CB8BA;
+	position:absolute;
+	top:4vh;
+	left:0;
 }
 #timerI{
-	width:100vw;
+	width:0vw;
 	height:3vh;
 	background-image:url(stripes.png);
 	background-position: 200% center;
@@ -93,7 +97,7 @@ textarea, input { outline: none; }
 	-webkit-transition:width 20s linear;
 	-moz-transition:width 20s linear;*/
 	
-	animation-name:timer;
+	/*animation-name:timer;
 	animation-duration:20s;
 	animation-timing-function:linear;
 	-webkit-animation-name:timer;
@@ -101,7 +105,7 @@ textarea, input { outline: none; }
 	-webkit-animation-timing-function:linear;
 	-moz-animation-name:timer;
 	-moz-animation-duration:20s;
-	-moz-animation-timing-function:linear;
+	-moz-animation-timing-function:linear;*/
 }
 @keyframes timer {
     from{
@@ -185,6 +189,23 @@ textarea, input { outline: none; }
 	text-align:center;
 	font-family: 'Nunito', sans-serif;
 }
+.waitingForAnswers{
+	width:100vw;
+	height:20vh;
+	top:10vh;
+	text-align:center;
+	line-height:15vh;
+	position:absolute;
+	font-size:10vh;
+	color:#188183;
+	font-family: 'Nunito', sans-serif;
+	
+	animation-name: colorFade;
+    animation-duration: 10s;
+    animation-iteration-count: infinite;
+	animation-timing-function: ease-in-out;
+	animation-direction: alternate;
+}
 .answer{
 	height:20vh;
 	width:12vw;
@@ -229,9 +250,12 @@ textarea, input { outline: none; }
 	line-height:4vw;
 	text-align:center;
 	font-size:3vw;
-	top:23vh;
 	cursor:pointer;
 	box-shadow:0vw .3vw 0 .1vw #A80410;
+	clear:both;
+	float:left;
+	position:relative;
+	margin-left:4vw;
 }
 .vote:before{
 	content:"X";
@@ -281,6 +305,36 @@ textarea, input { outline: none; }
 }
 .valid{
 	box-shadow: 0 0 2vh 1vh #44CC2F;
+}
+#doneReviewing{
+	width:10vh;
+	height:10vh;
+	position:absolute;
+	border-radius:5vh;
+	background-color:#00CC33;
+	color:#fff;
+	line-height:10vh;
+	text-align:center;
+	font-size:6vh;
+	left:50%;
+	margin-left:-5vh;
+	top:68vh;
+	font-family:"Lucida Sans Unicode", "Lucida Grande", sans-serif;
+	box-shadow:0vw .3vw 0 .1vw #003300;
+	cursor:pointer;
+	-webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+#doneReviewing:before{
+	content:"✔";
+}
+#doneReviewing:active{
+	box-shadow:0vw .1vw 0 .1vw #003300;
+	margin-top:.2vw;
 }
 #playerList{
 	width:100vw;
@@ -517,4 +571,19 @@ textarea, input { outline: none; }
 	position:relative;
 	padding:0;
 	margin:2vh 2vw 2vh 2vw;
+}
+#highScores{
+	width:40vw;
+	height:50vh;
+	top:10vh;
+	left:30vw;
+	position:fixed;
+	overflow-y:scroll;
+	overflow-x:hidden;
+	z-index:200;
+	background-color:#188183;
+	color:#FFF;
+}
+#hsTable{
+	
 }
