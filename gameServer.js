@@ -8,7 +8,7 @@ var http = require("http"),
 	mongoose = require("mongoose"),
 	SALT_WORK_FACTOR = 10,
 	autoIncrement = require('mongoose-auto-increment');
-	
+
 monCon = mongoose.connect("mongodb://localhost/scat", function(err){
 	if(err){
 		console.log(err +"");
@@ -36,7 +36,7 @@ UserSchema.pre('save', function(next) {
     // generate a salt
     bcrypt.genSalt(SALT_WORK_FACTOR, function(err, salt) {
 		if (err) return next(err);
-		
+
         // hash the password using our new salt
         bcrypt.hash(user.pw, salt, function(err, hash) {
 			if (err) return next(err);
@@ -68,12 +68,12 @@ testUser.save(function(err, usr){
 
 Users.findOne({ _id: 16 }, function(err, auser){
 	if (err) return handleError(err);
-	
+
 	auser.comparePassword('abc', function(err, isMatch) {
         if (err) throw err;
         console.log('abc:', isMatch); // -&gt; Password123: true
     });
-	
+
 });
 */
 // Retrieve
@@ -91,7 +91,7 @@ var app = http.createServer(function(req, resp){
 					resp.end();
 					return;
 				}
- 
+
 				// File exists and is readable
 				var mimetype = mime.lookup(filename);
 				resp.writeHead(200, {
@@ -116,7 +116,7 @@ app.listen(3456);
 
 var io = socketio.listen(app);
 var cats = ["A boy’s name", "A river", "An animal", "Things that are cold", "Insects", "TV Shows", "Things that grow", "Fruits", "Things that are black", "School subjects", "Movie titles", "Musical Instruments", "Authors", "Bodies of water", "A bird", "Countries", "Cartoon characters", "Holidays", "Things that are square", "In the NWT (Northwest Territories, Canada)", "Clothing", "A relative", "Games", "Sports Stars", "School supplies", "Things that are hot", "Heroes", "A girl’s name", "Fears", "TV Stars", "Colors", "A fish", "Fruits", "Provinces or States", "Sports equipment", "Tools", "Breakfast foods", "Gifts", "Flowers", "Ice cream flavors", "A drink", "Toys", "Cities", "Things in the kitchen", "Ocean things", "Nicknames", "Hobbies", "Parts of the body", "Sandwiches", "Items in a catalog", "World leaders/Poloticians", "School subjects", "Excuses for being late", "Ice cream flavors", "Things that jump/bounce", "Television stars", "Things in a park", "Foriegn cities", "Stones/Gems", "Musical instruments", "Nicknames", "Things in the sky", "Pizza toppings", "Colleges/Universities", "Fish", "Countries", "Things that have spots", "Historical Figures", "Something you’re afraid oF", "Terms of endearment", "Items in this room", "Drugs that are abused", "Fictional characters", "Menu items", "Magazines", "Capitals", "Kinds of candy", "Items you save up to buy", "Footware", "Something you keep hidden", "Items in a suitcase", "Things with tails", "Sports equiptment", "Crimes", "Things that are sticky", "Awards/ceremonies", "Cars", "Spices/Herbs", "Bad habits", "Cosmetics/Toiletries", "Celebrities", "Cooking utensils", "Reptiles/Amphibians", "Parks", "Leisure activities", "Things you’re allergic to", "Restaurants", "Notorious people", "Fruits", "Things in a medicine cabinet", "Toys", "Household chores", "Bodies of water", "Authors", "Halloween costumes", "Weapons", "Things that are round", "Words associated with exercise", "Sports", "Song titles", "Parts of the body", "Ethnic foods", "Things you shout", "Birds", "A girl’s name", "Ways to get from here to there", "Items in a kitchen", "Villains", "Flowers", "Things you replace", "Baby foods", "Famous duos and trios", "Things found in a desk", "Vacation spots", "Diseases", "Words associated with money", "Items in a vending machine", "Movie Titles", "Games", "Things you wear", "Beers", "Things at a circus", "Vegetables", "States", "Things you throw away", "Occupations", "Appliances", "Cartoon characters", "Types of drinks", "Musical groups", "Store names", "Things at a football game", "Trees", "Personality traits", "Video games", "Electronic gadgets", "Board games", "Things that use a remote", "Card games", "Internet lingo", "Offensive words", "Wireless things", "Computer parts", "Software", "Websites", "Game terms", "Things in a grocery store", "Reasons to quit your job", "Things that have stripes", "Tourist attractions", "Diet foods", "Things found in a hospital", "Food/Drink that is green", "Weekend Activities", "Acronyms", "Seafood", "Christmas songs", "Words ending in “-n”", "Words with double letters", "Children’s books", "Things found at a bar", "Sports played outdoors", "Names used in songs", "Foods you eat raw", "Places in Europe", "Olympic events", "Things you see at the zoo", "Math terms", "Animals in books or movies", "Things to do at a party", "Kinds of soup", "Things found in New York", "Things you get tickets for", "Things you do at work", "Foreign words used in English", "Things you shouldn’t touch", "Spicy foods", "Things at a carnival", "Things you make", "Places to hangout", "Animal noises", "Computer programs", "Honeymoon spots", "Things you buy for kids", "Things that can kill you", "Reasons to take out a loan", "Words associated with winter", "Things to do on a date", "Historic events", "Things you store items in", "Things you do everyday", "Things you get in the mail", "Things you save up to buy", "Things you sit/on", "Reasons to make a phone call", "Types of weather", "Titles people can have", "Things that have buttons", "Items you take on a road trip", "Things that have wheels", "Reasons to call 911", "Things that make you smile", "Ways to kill time", "Things that can get you fired", "Hobbies", "Holiday Activities"]; //http://scattergorieslists18.blogspot.com/
-var letters = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "r", "s", "t", "w"]; 
+var letters = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "r", "s", "t", "w"];
 var players = {};
 var games = {};
 //GAME PARAMS
@@ -159,13 +159,13 @@ function game(xgid){
 	this.gid = xgid;//game ID
 	this.members = {}; //the sockets in the game
 	this.waits = {};
-	this.curLetter = null; 
+	this.curLetter = null;
 	this.curCat = null;
 	this.curSubmissions = null;
 	this.state = 0 //0 is waiting for enough members. 1 is round is going on. 2 is answer review period.
 	this.timeFunction = null;
 	this.readyToContinue = 0;
-	
+
 	games[xgid + ""] = this;
 	console.log("New game created. Current list of games:");
 	console.log(games);
@@ -182,13 +182,13 @@ function game(xgid){
 				this.members[xplayer.pid + ""] = xplayer;
 				xplayer.cgame = this;
 				io.sockets.to(this.gid + "").emit("playerAdded", {xpid: xplayer.pid, xun: xplayer.username, xscore: xplayer.score});
-				
+
 				xplayer.leave(xplayer.room);
 				xplayer.join(this.gid + "");
 				xplayer.room = this.gid + "";
 				xplayer.emit("updatePlayerList", this.getPlayerList());
 				io.sockets.emit("updateGameList", getOpenGames());
-				
+
 				if(Object.keys(this.members).length == MIN_PLAYERS){
 					//game has reached enough people to start
 					this.startRound();
@@ -198,13 +198,13 @@ function game(xgid){
 				}
 				console.log(xplayer.username + " was added");
 				return true;//says that the player was added
-			}			
+			}
 		}else{
 			io.sockets.emit("updateGameList", getOpenGames());
 			return false;//says the player was not added
 		}
 	}
-	
+
 	this.removeMember = function(xplayer){
 		//remove the player from the game
 		delete this.members[xplayer.pid + ""];
@@ -224,7 +224,7 @@ function game(xgid){
 				//if there are enough players now
 				if(Object.keys(this.members).length >= MIN_PLAYERS){
 					this.startRound();
-				}				
+				}
 		}
 		if(Object.keys(this.members).length == 0){
 			delete games[this.gid + ""];
@@ -245,16 +245,16 @@ function game(xgid){
 					this.members[xpid + ""] = xplayer;
 					xplayer.cgame = this;
 					io.sockets.to(this.gid + "").emit("playerAdded", {xpid: xplayer.pid, xun: xplayer.username, xscore: xplayer.score});
-					
+
 					xplayer.leave(xplayer.room);
 					xplayer.join(this.gid + "");
 					xplayer.room = this.gid + "";
 					xplayer.emit("updatePlayerList", this.getPlayerList());
-					
+
 					console.log(xplayer.username + " was moved from the waitlist to the game");
 				}
 			}
-			 
+
 		}
 		this.waits = {};
 		console.log("waits merged");
@@ -285,7 +285,7 @@ function game(xgid){
 				 if(typeof this.members[xpid + ""].cAnswer !== 'undefined'){
 					  pScore = scoreAnswer(this.members[xpid + ""].cAnswer);
 					  console.log(this.members[xpid + ""].cAnswer.answer + " scored " + pScore);
-					  
+
 					  //save new score to the database
 					  Users.findOne({_id: parseInt(xpid)}, function(err, mUser){
 					  		nscore = mUser.score + pScore;
@@ -296,18 +296,18 @@ function game(xgid){
 								io.sockets.to(_this.gid + "").emit("updatePlayerList", _this.getPlayerList());
 							});
 					  });
-					  
+
 				 }
 			 }
 		}
-		//merge the waits into the members list	
+		//merge the waits into the members list
 		this.mergeWaits();
 		//emit to all sockets in the room (whose namespace = the game's id) to start a new round
 		//->in the data parameter of the function, tell them a random letter and cattegory. Also, include an associative array where the key is the player's id and the value is an object with their score and username
 		this.curLetter = pickLetter();
 		this.curCat = pickCat();
 		io.sockets.to(this.gid + "").emit("startRound", {letter: this.curLetter, cat: this.curCat, dur: gameTimeLimit});
-		
+
 		//if there are any players waiting to join, let them in now.
 		this.timeFunction = setTimeout(function(){_this.endRound();}, gameTimeLimit);//calls the end round function after the time limit
 	}
@@ -315,7 +315,7 @@ function game(xgid){
 		var pAns = new answer(this.members[xplayer.pid + ""], xanswer, this.curLetter);
 		this.curSubmissions[xplayer.pid + ""] = pAns;
 		xplayer.cAnswer = pAns;
-		
+
 		if(!xnoresponse && Object.keys(this.curSubmissions).length == Object.keys(this.members).length){
 			clearTimeout(this.timeFunction);
 			this.endRound();
@@ -335,7 +335,7 @@ function game(xgid){
 					  this.submitAnswer(pAns, "", true);
 					  console.log(pAns.cAnswer + "");
 				  }
-				  
+
 			 }
 		}
 		console.log(this.curSubmissions);
@@ -375,13 +375,13 @@ function checkAnswers(xanswers, xletter){
 	//check through each answer to make sure it is not null, starts with the letter. otherwise set isInvalid to true
 	//if it is good, calculate the potential points by counting the number of words longer than 1 letter that start with the letter
 	//
-	//once all the invalid answers have been weeded out, loop through the answers again. For each one (that is valid), loop through the rest of the answers (that are valid) (index of current one + 1 to length of array) and do string compare on the lowercase version of the string. 
-	//->There are a few considerations for desiging this algorithm. 
+	//once all the invalid answers have been weeded out, loop through the answers again. For each one (that is valid), loop through the rest of the answers (that are valid) (index of current one + 1 to length of array) and do string compare on the lowercase version of the string.
+	//->There are a few considerations for desiging this algorithm.
 	//--->we should only be paying attention to words in the answer starting with the letter. This will make life easier for us
-	//--->I think we should start with calculating the Damerau–Levenshtein distance https://en.wikipedia.org/wiki/Damerau%E2%80%93Levenshtein_distance . 
+	//--->I think we should start with calculating the Damerau–Levenshtein distance https://en.wikipedia.org/wiki/Damerau%E2%80%93Levenshtein_distance .
 	//--->we also need to be able to account for different ordering if there is more than one word. I would create an array for each of the two answers of the words from those answers starting with the letter and somehow run the string compare function to see if the answers are the same but in a different order (accounting for slight spelling variations)
 	//->if they are too similar (threshold TBD) set hasSimilar for both to true. The threshold should be a percentage calculated from the difference and the (average?) length i.e. 5% of the characters are different. This algorithm will be the most complicated part because we'll also have to check for things such as different orders etc.
-	//return the array	
+	//return the array
 	for(var xpid in xanswers){
 		var oAns = xanswers[xpid + ""]; //object
 		var tAns = oAns.answer.toLowerCase(); //text
@@ -406,9 +406,9 @@ function checkAnswers(xanswers, xletter){
 		var fAnsa = aAnsa.filter(function(val){ //Array of words with non xletters filtered out a
 			return val.charAt(0) == xletter
 		});
-		
+
 		if(!oAnsa.isInvalid){ //if the answer is valid
-			
+
 			innerAnswerLoop:
 			for(var xpidb in xanswers){ //loop through all the answers again
 				if(xanswers[xpidb + ""] != oAnsa && !xanswers[xpidb + ""].isInvalid){ //answer b is not answer a and answer b is valid
@@ -417,17 +417,17 @@ function checkAnswers(xanswers, xletter){
 					var aAnsb = tAnsb.split(" "); //array of words b
 					var fAnsb = aAnsb.filter(function(val){ //Array of words with non xletters filtered out b
 						return val.charAt(0) == xletter
-					});	
-					
+					});
+
 					//if the answers are exactly equal or at least have the same main words, set them both to invalid eg "apple" and "apple" or "Berenstein Bears" and "The Berenstein Bears"
-					if(tAnsa == tAnsb || fAnsa.join('') == fAnsb.join('')){ 
+					if(tAnsa == tAnsb || fAnsa.join('') == fAnsb.join('')){
 						oAnsa.isInvalid = true;
 						oAnsb.isInvalid = true;
 						console.log("Answer " + tAnsa + " is invalid because it has the same key words in the same order as tAnsb " + tAnsb);
-						
+
 					}
-					
-					//if the answers are more than 75% alike then flag them as posible similars 
+
+					//if the answers are more than 75% alike then flag them as posible similars
 					if(ldComp(tAnsa, tAnsb) > .75 || ldComp(fAnsa.join(''), fAnsb.join('')) > .75){
 						oAnsa.hasSimilar = true;
 						oAnsb.hasSimilar = true;
@@ -437,7 +437,7 @@ function checkAnswers(xanswers, xletter){
 							oAnsb.similars.push(oAnsa);
 						}*/
 					}
-					
+
 					if(fAnsa.length > 1 || fAnsb.length > 1){ //has more than one key word, check different orders
 						tmpB = fAnsb;
 						var matches = 0;
@@ -469,17 +469,17 @@ function checkAnswers(xanswers, xletter){
 			}
 		}
 	}
-	
+
 	return xanswers;
 }
 //performs operation to calculate how similar two strings are as a percent of their average length
-//uses Damerau–Levenshtein distance https://en.wikipedia.org/wiki/Damerau%E2%80%93Levenshtein_distance 
+//uses Damerau–Levenshtein distance https://en.wikipedia.org/wiki/Damerau%E2%80%93Levenshtein_distance
 function ldComp(stringA, stringB){
 	var ldDist = levenshteinWeighted(stringA, stringB);
 	console.log("ld is " + ldDist);
 	bigger = Math.max(stringA.length, stringB.length)
 	return (bigger - ldDist) / bigger;
-	
+
 }
 
 //An awnser object - xplayer is the socket
@@ -488,9 +488,9 @@ function answer(xplayer, xanswer, xletter){
 	this.playerUN = xplayer.username;
 	this.playerID = xplayer.pid;
 	this.playerScore = xplayer.score;
-	this.answer = xanswer; 
+	this.answer = xanswer;
 	this.letter = xletter;
-	
+
 	this.points = 0;
 	this.downvotes = 0;
 	this.isInvalid = false;
@@ -529,11 +529,11 @@ function giveHighScoresList(xusr, num){
 io.sockets.on("connection", function(socket){
 	// This callback runs when a new Socket.IO connection is established.
 	console.log("connect: ");
-	console.log(socket.id);	
-	
+	console.log(socket.id);
+
 	//call that function on connection
 	socket.emit("updateGameList", getOpenGames());
-	
+
 	//handle register
 	socket.on("register", function(data){
 		Users.findOne({ un: data.un + "" }, function(err, xuser){
@@ -556,12 +556,12 @@ io.sockets.on("connection", function(socket){
 			}
 		});
 	});
-	
+
 	//handle login
 	socket.on("login", function(data){
 		Users.findOne({ un: data.un }, function(err, auser){
 			if (err) return handleError(err);
-			
+
 			if(auser){
 				auser.comparePassword(data.pw, function(err, isMatch) {
 					if (err) throw err;
@@ -578,10 +578,10 @@ io.sockets.on("connection", function(socket){
 			}else{
 				socket.emit("badLogin");
 			}
-			
+
 		});
 	});
-	
+
 	//handle logout
 	socket.on("logout", function(){
 		if(typeof socket.cgame !== 'undefined'){
@@ -592,17 +592,17 @@ io.sockets.on("connection", function(socket){
 		delete socket.score;
 		socket.emit("logoutSuccess");
 	});
-	
+
 	//function to handle joining a game
 	//->must tell all other players this
 	socket.on("joinGame", function(data){
 		if(!(typeof games[data + ""] === 'undefined') && games[data + ""].addMember(socket)){
-			
+
 		}else{
 			io.sockets.emit("updateGameList", getOpenGames());
 		}
-	});	
-	
+	});
+
 	//function to handle creating a game
 	//->must tell all other players this
 	socket.on("createNewGame", function(data){
@@ -615,9 +615,9 @@ io.sockets.on("connection", function(socket){
 			console.log("Error: the cost couldnt join the game");
 		}
 	});
-	
+
 	//function to handle ending/ deleting a game
-	
+
 	//function to handle a player submitting an answer
 	socket.on("subAnswer", function(data){
 		console.log("answer submitted: " + data);
@@ -627,7 +627,7 @@ io.sockets.on("connection", function(socket){
 	socket.on("downvote", function(data){
 		socket.cgame.downvote(data);
 	});
-	
+
 	//function to handle a player leaving a game
 	socket.on('disconnect', function(){
 		if(typeof socket.cgame !== 'undefined'){
@@ -636,15 +636,15 @@ io.sockets.on("connection", function(socket){
 		console.log("disconnect: ");
 		console.log(socket.id);
 	});
-	
+
 	socket.on("getHighScores", function(){
 		giveHighScoresList(socket, 50);
 	});
-	
+
 	socket.on("goback", function(){
 		socket.cgame.removeMember(socket);
 	});
-	
+
 	socket.on("doneReviewing", function(){
 		socket.cgame.playerDoneReviewing();
 	});

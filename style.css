@@ -13,7 +13,7 @@ textarea, input { outline: none; }
 .content{
 	width:100vw;
 	height:60vh;
-	position:absolute;	
+	position:absolute;
 	top:4vh;
 	left:0;
 }
@@ -32,7 +32,7 @@ textarea, input { outline: none; }
 #cat{
 	width:100vw;
 	height:15vh;
-	position:absolute;	
+	position:absolute;
 	top:5vh;
 	bottom:85vh;
 	left:0;
@@ -96,7 +96,7 @@ textarea, input { outline: none; }
 	/*transition:width 20s linear;
 	-webkit-transition:width 20s linear;
 	-moz-transition:width 20s linear;*/
-	
+
 	/*animation-name:timer;
 	animation-duration:20s;
 	animation-timing-function:linear;
@@ -177,12 +177,12 @@ textarea, input { outline: none; }
 	margin-top:.4vh;
 }
 #review{
-	
+
 }
 #answers{
 	width:100vw;
 	height:20vh;
-	position:absolute;	
+	position:absolute;
 	top:25vh;
 	bottom:60vh;
 	left:0;
@@ -199,7 +199,7 @@ textarea, input { outline: none; }
 	font-size:10vh;
 	color:#188183;
 	font-family: 'Nunito', sans-serif;
-	
+
 	animation-name: colorFade;
     animation-duration: 10s;
     animation-iteration-count: infinite;
@@ -339,7 +339,7 @@ textarea, input { outline: none; }
 #playerList{
 	width:100vw;
 	height:15vh;
-	position:absolute;	
+	position:absolute;
 	top:85vh;
 	bottom:0;
 	left:0;
@@ -430,7 +430,7 @@ textarea, input { outline: none; }
 .popLimit{
 	font-size:3vh;
 	color:#F03744;
-	
+
 }
 .join{
 	width:8vw;
@@ -459,7 +459,7 @@ textarea, input { outline: none; }
 	font-size:15vh;
 	color:#188183;
 	font-family: 'Nunito', sans-serif;
-	
+
 	animation-name: colorFade;
     animation-duration: 10s;
     animation-iteration-count: infinite;
@@ -585,5 +585,33 @@ textarea, input { outline: none; }
 	color:#FFF;
 }
 #hsTable{
-	
+
+}
+
+#highscore-btn{
+	width:8vw;
+	height:6vh;
+	padding-bottom: 5px;
+	margin: 0 14vw 2vh 14vw;
+	background-color:#F0FC25;
+	border-radius:6vh;
+	text-align:center;
+	line-height:6vh;
+	font-size:4vh;
+	font-family: 'Nunito', sans-serif;
+	color:#188183;
+	cursor:pointer;
+	position:absolute;
+	bottom:0;
+	box-shadow:0vw .5vh 0 .1vh #A2AA00;
+	-webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+#highscore-btn:active{
+	box-shadow:0vw .1vh 0 .1vh #A2AA00;
+	margin-top:.4vh;
 }

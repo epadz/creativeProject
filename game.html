@@ -70,7 +70,7 @@ socketio.on("startRound",function(data){
 	$("#doneReviewing").css("display","none");
 	setTimer(data.dur);
 });
-//when the player submits an answer -> change submit button to say waiting, make it not do anything on click and make input readonly 
+//when the player submits an answer -> change submit button to say waiting, make it not do anything on click and make input readonly
 function subAnswer(){
 	if($("#ansInput").val().length > 0){
 		socketio.emit('subAnswer', $("#ansInput").val() + "");
@@ -104,7 +104,7 @@ socketio.on("roundOver", function(data){
 		if(xans.playerID == auid && !xans.isInvalid){
 			aCantVote = ' style="display:none"';
 		}
-		
+
 		ihtml += '<div class="answer ' + aClass + '" data-pid="' + xans.playerID + '"><div class="aun">' + xans.playerUN + '</div><div class="answerText"><span>' + ansDisp + '</span></div><div class="strikes">';
 		for(i = 1; i < Object.keys(data.roundSubmissions).length; i++){
 			ihtml += '<div class="strike' + aStruck + '"></div>';
@@ -130,7 +130,7 @@ socketio.on("updateVotes",function(data){
 	}else{
 		for(var i = 0; i < parseInt(data.downvotes); i++){
 			$(xans).find(".strike").eq(i).addClass("struck");
-		}		
+		}
 	}
 });
 //when a player leaves the game
@@ -143,7 +143,7 @@ socketio.on("insufficientPlayers",function(data){
 function register(){
 	un = $("#un").val() + "";
 	pw = $("#pw").val() + "";
-	
+
 	if(un != "" && un != " " && pw != "" && pw != " "){
 		socketio.emit('register', {un: un, pw: pw});
 	}else{
@@ -171,7 +171,7 @@ socketio.on("registerSuccess", function(data){
 function login(){
 	un = $("#un").val() + "";
 	pw = $("#pw").val() + "";
-	
+
 	if(un != "" && un != " " && pw != "" && pw != " "){
 		socketio.emit('login', {un: un, pw: pw});
 	}else{
@@ -203,7 +203,7 @@ socketio.on("logoutSuccess", function(){
 	delete ascore;
 	delete ausername;
 	setView(4);
-	
+
 });
 //exits game
 function goback(){
@@ -223,12 +223,16 @@ socketio.on("highScores", function(data){
 	$("#highScores").css("display","inline");
 });
 
+function closeScores(){
+  $("#highScores").css("display","none");
+}
+
 //resets timer div
 function setTimer(xmilseconds){
 	$("#timerI").stop(true, true);
 	$("#timerI").css("width","0vw");
 	$("#timerI").animate({width:"100vw"}, xmilseconds, "linear", function(){
-		
+
 	});
 }
 //tells the server the player is done reviewing
@@ -312,7 +316,7 @@ function setView(xview){	//0 is games list, 1 is game play, 2 is review, 3 is wa
     	waiting to join game
         <div id="waitingBall"></div>
     </div>
-    
+
     <!-- 1/2: GAME PLAY AND REVIEW SCREENS -->
 	<div id="timerO" style="display:none"><div id="timerI"></div></div>
 	<div id="cat" style="display:none">Famous duos and trios<div id="letter">M</div></div>
@@ -330,7 +334,7 @@ function setView(xview){	//0 is games list, 1 is game play, 2 is review, 3 is wa
                 <div class="strikes">
                 	<div class="strike"></div><div class="strike"></div><div class="strike"></div><div class="strike"></div><div class="strike"></div>
                     <div class="vote" style="display:none"></div>
-                </div>                
+                </div>
             </div>
             <div class="answer valid">
             	<div class="aun">kenny</div>
@@ -338,7 +342,7 @@ function setView(xview){	//0 is games list, 1 is game play, 2 is review, 3 is wa
                 <div class="strikes">
                 	<div class="strike"></div><div class="strike"></div><div class="strike"></div><div class="strike"></div><div class="strike"></div>
                     <div class="vote"></div>
-                </div>                
+                </div>
             </div>
             <div class="answer flaggedAnswer">
             	<div class="flag"></div>
@@ -347,7 +351,7 @@ function setView(xview){	//0 is games list, 1 is game play, 2 is review, 3 is wa
                 <div class="strikes">
                 	<div class="strike struck"></div><div class="strike struck"></div><div class="strike"></div><div class="strike"></div><div class="strike"></div>
                     <div class="vote"></div>
-                </div>                
+                </div>
             </div>
             <div class="answer flaggedAnswer">
             	<div class="flag"></div>
@@ -356,7 +360,7 @@ function setView(xview){	//0 is games list, 1 is game play, 2 is review, 3 is wa
                 <div class="strikes">
                 	<div class="strike struck"></div><div class="strike struck"></div><div class="strike"></div><div class="strike"></div><div class="strike"></div>
                     <div class="vote"></div>
-                </div>                
+                </div>
             </div>
             <div class="answer invalid">
             	<div class="aun">paul</div>
@@ -364,7 +368,7 @@ function setView(xview){	//0 is games list, 1 is game play, 2 is review, 3 is wa
                 <div class="strikes">
                 	<div class="strike struck"></div><div class="strike struck"></div><div class="strike struck"></div><div class="strike struck"></div><div class="strike struck"></div>
                     <div class="vote" style="display:none"></div>
-                </div>                
+                </div>
             </div>
             <div class="answer invalid">
             	<div class="aun">bob</div>
@@ -372,7 +376,7 @@ function setView(xview){	//0 is games list, 1 is game play, 2 is review, 3 is wa
                 <div class="strikes">
                 	<div class="strike struck"></div><div class="strike struck"></div><div class="strike struck"></div><div class="strike struck"></div><div class="strike struck"></div>
                     <div class="vote" style="display:none"></div>
-                </div>                
+                </div>
             </div>*/
             <div id="waitingForAnswers">waiting for other players to answer</div>
         </div>
@@ -381,25 +385,25 @@ function setView(xview){	//0 is games list, 1 is game play, 2 is review, 3 is wa
     <div id="playerList" style="display:none">
 
     </div>
-    
+
     <!-- 0: GAMES LIST -->
     <div id="games" style="display:none">
-    	
+
     </div>
-    
+
     <!-- login / register-->
     <div id="logreg" style="display:block">
 		<div class="lrTitle">login</div>
         <div id="lrMessage"></div>
     	<div id="login">
-        <form id="loginForm" onsubmit="login(); return false;" method="post">        	
+        <form id="loginForm" onsubmit="login(); return false;" method="post">
         	<input id="un" type="text" placeholder="username" />
             <input id="pw" type="password" placeholder="password" /><input type="submit" style="display:none" />
             <div class="sublog" onClick="login()">login</div><div class="sublog" onClick="register()">register</div>
         </form>
-        </div>        
+        </div>
     </div>
-    
+
     <!-- high scores listing-->
     <div id="highScores" style="display:none">
     	<table id="hsTable">
@@ -413,9 +417,10 @@ function setView(xview){	//0 is games list, 1 is game play, 2 is review, 3 is wa
                 </th>
             </thead>
             <tbody>
-            	
+
             </tbody>
         </table>
+        <div id="highscore-btn" onClick="closeScores()">close</div>
     </div>
 </body>
 </html>
